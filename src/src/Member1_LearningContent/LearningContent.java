@@ -16,11 +16,12 @@ public class LearningContent implements Displayable {
     private String colorTheme;   // Hex color for card and icon background
     private int pageNumber;      // Page number within its topic (1-based)
     private String topicName;    // Parent topic this page belongs to
+    private String imagePath;    // Relative path to the SVG image asset
 
     // ── Constructor ───────────────────────────────────────────────────────────
     public LearningContent(String title, String content, String factLabel,
                            String factText, String iconName, String colorTheme,
-                           int pageNumber, String topicName) {
+                           int pageNumber, String topicName, String imagePath) {
         this.title       = title;
         this.content     = content;
         this.factLabel   = factLabel;
@@ -29,6 +30,7 @@ public class LearningContent implements Displayable {
         this.colorTheme  = colorTheme;
         this.pageNumber  = pageNumber;
         this.topicName   = topicName;
+        this.imagePath   = imagePath;
     }
 
     // ── Displayable interface implementation ──────────────────────────────────
@@ -80,6 +82,7 @@ public class LearningContent implements Displayable {
     // ── Additional getters ────────────────────────────────────────────────────
     public int    getPageNumber() { return pageNumber; }
     public String getTopicName()  { return topicName; }
+    public String getImagePath()  { return imagePath; }
 
     // ── toString override ─────────────────────────────────────────────────────
     @Override
