@@ -100,8 +100,8 @@ public class ContentPanel extends JPanel {
 
         // Icon area
         iconPanel = new JPanel(new BorderLayout());
-        iconPanel.setPreferredSize(new Dimension(340, 110));
-        iconPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 110));
+        iconPanel.setPreferredSize(new Dimension(350, 180));
+        iconPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 180));
         iconPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         iconLabel = new JLabel("❤", SwingConstants.CENTER);
         iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 52));
@@ -119,15 +119,16 @@ public class ContentPanel extends JPanel {
 
         // Body text
         bodyText = new JTextArea();
-        bodyText.setFont(new Font("Arial", Font.PLAIN, 13));
+        bodyText.setFont(new Font("Arial", Font.PLAIN, 14));
         bodyText.setForeground(TEXT_MED);
         bodyText.setLineWrap(true);
         bodyText.setWrapStyleWord(true);
         bodyText.setEditable(false);
         bodyText.setOpaque(false);
         bodyText.setAlignmentX(Component.LEFT_ALIGNMENT);
+        bodyText.setBorder(new EmptyBorder(0, 0, 0, 8));
         body.add(bodyText);
-        body.add(Box.createVerticalStrut(12));
+        body.add(Box.createVerticalStrut(14));
 
         // Fact box
         factBox = new JPanel();
@@ -274,13 +275,47 @@ public class ContentPanel extends JPanel {
         }
         dotsPanel.revalidate();
 
-        // Icon panel colour
+        // Icon / image area
         Color theme = parseColor(page.getColorTheme());
         Color lightTheme = blend(theme, WHITE, 0.15f);
         iconPanel.setBackground(lightTheme);
-        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 52));
-        iconLabel.setText(iconFor(page.getIconName()));
-        iconLabel.setForeground(theme);
+
+        // Load image from assets folder
+        String imgPath = page.getImagePath();
+        java.io.File imgFile = new java.io.File(imgPath);
+        if (!imgFile.exists()) {
+            String base = System.getProperty("user.dir");
+            imgFile = new java.io.File(base + java.io.File.separator + imgPath);
+        }
+        boolean loaded = false;
+        if (imgFile.exists()) {
+            try {
+                java.awt.image.BufferedImage raw = javax.imageio.ImageIO.read(imgFile);
+                if (raw != null) {
+                    // Scale to fill panel width, maintain aspect ratio
+                    int panelW = 350;
+                    int panelH = 180;
+                    double scaleX = (double) panelW / raw.getWidth();
+                    double scaleY = (double) panelH / raw.getHeight();
+                    double scale  = Math.min(scaleX, scaleY);
+                    int newW = (int)(raw.getWidth()  * scale);
+                    int newH = (int)(raw.getHeight() * scale);
+                    java.awt.Image scaled = raw.getScaledInstance(
+                        newW, newH, java.awt.Image.SCALE_SMOOTH);
+                    iconLabel.setIcon(new ImageIcon(scaled));
+                    iconLabel.setText("");
+                    loaded = true;
+                }
+            } catch (Exception ex) {
+                System.out.println("Image load error: " + ex.getMessage());
+            }
+        }
+        if (!loaded) {
+            iconLabel.setIcon(null);
+            iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 52));
+            iconLabel.setText(iconFor(page.getIconName()));
+            iconLabel.setForeground(theme);
+        }
 
         // Texts
         pageTitleLabel.setText(page.getTitle());
