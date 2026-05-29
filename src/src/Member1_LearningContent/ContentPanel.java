@@ -2,8 +2,8 @@
 // Creator    : Victoria Ngui Fong Eik (106647)
 // Tester     : [Member 2 Name]
 // Description: Displays a single topic's pages one at a time.
-//              Shows title, body text, and a fact box.
-//              Includes Next/Back navigation and page dot indicators.
+//              Designed to fit within 390x700 smartphone resolution.
+//              Shows image, title, body text, fact box, and navigation.
 
 import java.awt.*;
 import java.util.List;
@@ -13,13 +13,13 @@ import javax.swing.border.*;
 public class ContentPanel extends JPanel {
 
     // ── Colours ───────────────────────────────────────────────────────────────
-    private static final Color BG          = new Color(0xF0FAF5);
-    private static final Color GREEN       = new Color(0x1D9E75);
-    private static final Color WHITE       = Color.WHITE;
-    private static final Color TEXT_DARK   = new Color(0x1A1A1A);
-    private static final Color TEXT_MED    = new Color(0x555555);
-    private static final Color TEXT_LIGHT  = new Color(0x888888);
-    private static final Color BORDER_CLR  = new Color(0xDDDDDD);
+    private static final Color GREEN      = new Color(0x1D9E75);
+    private static final Color GREEN_DARK = new Color(0x085041);
+    private static final Color WHITE      = Color.WHITE;
+    private static final Color TEXT_DARK  = new Color(0x1A1A1A);
+    private static final Color TEXT_MED   = new Color(0x444444);
+    private static final Color BORDER_CLR = new Color(0xDDDDDD);
+    private static final Color BG_PAGE    = new Color(0xF8FFFE);
 
     // ── State ─────────────────────────────────────────────────────────────────
     private List<LearningContent> pages;
@@ -28,20 +28,19 @@ public class ContentPanel extends JPanel {
     private Runnable onComplete;
 
     // ── UI components ─────────────────────────────────────────────────────────
-    private JLabel  titleLabel;
-    private JLabel  badgeLabel;
-    private JLabel  pageTitleLabel;
+    private JLabel    topicTitleLabel;
+    private JLabel    badgeLabel;
+    private JPanel    dotsPanel;
+    private JLabel    imageLabel;
+    private JLabel    pageTitleLabel;
     private JTextArea bodyText;
-    private JPanel  factBox;
-    private JLabel  factLabelLbl;
+    private JPanel    factBox;
+    private JLabel    factLabelLbl;
     private JTextArea factTextArea;
-    private JPanel  dotsPanel;
-    private JButton backBtn;
-    private JButton nextBtn;
-    private JButton homeBtn;
-    private JPanel  iconPanel;
-    private JLabel  iconLabel;
-    private JPanel  quizPrompt;
+    private JPanel    quizPrompt;
+    private JButton   backBtn;
+    private JButton   nextBtn;
+    private JButton   homeBtn;
 
     public ContentPanel(Runnable onBack, Runnable onComplete) {
         this.onBack     = onBack;
@@ -52,92 +51,96 @@ public class ContentPanel extends JPanel {
     }
 
     private void buildUI() {
-        // ── Header ────────────────────────────────────────────────────────────
-        JPanel header = new JPanel(new BorderLayout());
+
+        // ── TOP HEADER ────────────────────────────────────────────────────────
+        JPanel header = new JPanel(new BorderLayout(8, 0));
         header.setBackground(WHITE);
         header.setBorder(new CompoundBorder(
             new MatteBorder(0, 0, 1, 0, BORDER_CLR),
-            new EmptyBorder(12, 14, 12, 14)
+            new EmptyBorder(10, 12, 10, 12)
         ));
 
         JButton backArrow = new JButton("←");
-        backArrow.setFont(new Font("Arial", Font.PLAIN, 16));
-        backArrow.setForeground(TEXT_DARK);
-        backArrow.setBackground(new Color(0xF5F5F5));
-        backArrow.setBorder(BorderFactory.createLineBorder(BORDER_CLR));
+        backArrow.setFont(new Font("Arial", Font.BOLD, 16));
+        backArrow.setForeground(GREEN_DARK);
+        backArrow.setBackground(new Color(0xE1F5EE));
+        backArrow.setBorder(BorderFactory.createLineBorder(new Color(0xA8DFC8)));
         backArrow.setPreferredSize(new Dimension(36, 36));
         backArrow.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        backArrow.setFocusPainted(false);
         backArrow.addActionListener(e -> onBack.run());
 
-        titleLabel = new JLabel("Topic");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 15));
-        titleLabel.setForeground(TEXT_DARK);
-        titleLabel.setBorder(new EmptyBorder(0, 10, 0, 0));
+        topicTitleLabel = new JLabel("Topic");
+        topicTitleLabel.setFont(new Font("Arial", Font.BOLD, 15));
+        topicTitleLabel.setForeground(TEXT_DARK);
 
-        badgeLabel = new JLabel("");
+        badgeLabel = new JLabel("Page 1/1");
         badgeLabel.setFont(new Font("Arial", Font.PLAIN, 11));
         badgeLabel.setOpaque(true);
         badgeLabel.setBorder(new EmptyBorder(3, 8, 3, 8));
 
-        header.add(backArrow, BorderLayout.WEST);
-        header.add(titleLabel, BorderLayout.CENTER);
-        header.add(badgeLabel, BorderLayout.EAST);
+        header.add(backArrow,        BorderLayout.WEST);
+        header.add(topicTitleLabel,  BorderLayout.CENTER);
+        header.add(badgeLabel,       BorderLayout.EAST);
         add(header, BorderLayout.NORTH);
 
-        // ── Scroll body ───────────────────────────────────────────────────────
+        // ── SCROLLABLE BODY ───────────────────────────────────────────────────
         JPanel body = new JPanel();
         body.setLayout(new BoxLayout(body, BoxLayout.Y_AXIS));
-        body.setBackground(WHITE);
-        body.setBorder(new EmptyBorder(16, 16, 16, 16));
+        body.setBackground(BG_PAGE);
+        body.setBorder(new EmptyBorder(10, 14, 10, 14));
 
         // Page dots
         dotsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 4, 0));
-        dotsPanel.setBackground(WHITE);
+        dotsPanel.setOpaque(false);
         dotsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        dotsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 20));
+        dotsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 16));
         body.add(dotsPanel);
+        body.add(Box.createVerticalStrut(8));
+
+        // Image panel — 150px tall, rounded feel via border
+        imageLabel = new JLabel("", SwingConstants.CENTER);
+        imageLabel.setOpaque(true);
+        imageLabel.setBackground(new Color(0xE1F5EE));
+        imageLabel.setPreferredSize(new Dimension(362, 150));
+        imageLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 150));
+        imageLabel.setMinimumSize(new Dimension(362, 150));
+        imageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        imageLabel.setBorder(BorderFactory.createLineBorder(new Color(0xCCEEDD), 1));
+        body.add(imageLabel);
         body.add(Box.createVerticalStrut(12));
 
-        // Icon area
-        iconPanel = new JPanel(new BorderLayout());
-        iconPanel.setPreferredSize(new Dimension(350, 180));
-        iconPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 180));
-        iconPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        iconLabel = new JLabel("❤", SwingConstants.CENTER);
-        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 52));
-        iconPanel.add(iconLabel, BorderLayout.CENTER);
-        body.add(iconPanel);
-        body.add(Box.createVerticalStrut(14));
-
-        // Page title — stored as field so renderPage() can update it directly
+        // Page title
         pageTitleLabel = new JLabel("Title");
-        pageTitleLabel.setFont(new Font("Arial", Font.BOLD, 17));
+        pageTitleLabel.setFont(new Font("Arial", Font.BOLD, 16));
         pageTitleLabel.setForeground(TEXT_DARK);
         pageTitleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         body.add(pageTitleLabel);
-        body.add(Box.createVerticalStrut(8));
+        body.add(Box.createVerticalStrut(7));
 
         // Body text
         bodyText = new JTextArea();
-        bodyText.setFont(new Font("Arial", Font.PLAIN, 14));
+        bodyText.setFont(new Font("Arial", Font.PLAIN, 13));
         bodyText.setForeground(TEXT_MED);
         bodyText.setLineWrap(true);
         bodyText.setWrapStyleWord(true);
         bodyText.setEditable(false);
         bodyText.setOpaque(false);
         bodyText.setAlignmentX(Component.LEFT_ALIGNMENT);
-        bodyText.setBorder(new EmptyBorder(0, 0, 0, 8));
         body.add(bodyText);
-        body.add(Box.createVerticalStrut(14));
+        body.add(Box.createVerticalStrut(12));
 
         // Fact box
         factBox = new JPanel();
         factBox.setLayout(new BoxLayout(factBox, BoxLayout.Y_AXIS));
         factBox.setAlignmentX(Component.LEFT_ALIGNMENT);
-        factBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
-        factBox.setBorder(new EmptyBorder(10, 12, 10, 12));
+        factBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
+        factBox.setBorder(new CompoundBorder(
+            BorderFactory.createLineBorder(new Color(0xCCCCCC), 1),
+            new EmptyBorder(10, 12, 10, 12)
+        ));
 
-        factLabelLbl = new JLabel("Label");
+        factLabelLbl = new JLabel("LABEL");
         factLabelLbl.setFont(new Font("Arial", Font.BOLD, 11));
         factLabelLbl.setAlignmentX(Component.LEFT_ALIGNMENT);
         factBox.add(factLabelLbl);
@@ -154,7 +157,7 @@ public class ContentPanel extends JPanel {
         body.add(factBox);
         body.add(Box.createVerticalStrut(12));
 
-        // Quiz prompt (shown on last page)
+        // Quiz prompt (last page only)
         quizPrompt = buildQuizPrompt();
         quizPrompt.setAlignmentX(Component.LEFT_ALIGNMENT);
         quizPrompt.setVisible(false);
@@ -163,30 +166,26 @@ public class ContentPanel extends JPanel {
 
         JScrollPane scroll = new JScrollPane(body);
         scroll.setBorder(null);
-        scroll.getVerticalScrollBar().setUnitIncrement(12);
+        scroll.setBackground(BG_PAGE);
+        scroll.getViewport().setBackground(BG_PAGE);
+        scroll.getVerticalScrollBar().setUnitIncrement(14);
         add(scroll, BorderLayout.CENTER);
 
-        // ── Navigation row ────────────────────────────────────────────────────
+        // ── BOTTOM NAV ────────────────────────────────────────────────────────
         JPanel navRow = new JPanel(new GridLayout(1, 0, 8, 0));
         navRow.setBackground(WHITE);
         navRow.setBorder(new CompoundBorder(
             new MatteBorder(1, 0, 0, 0, BORDER_CLR),
-            new EmptyBorder(10, 16, 10, 16)
+            new EmptyBorder(10, 14, 10, 14)
         ));
 
-        backBtn = createNavButton("← Back", false);
-        backBtn.addActionListener(e -> {
-            currentPage--;
-            renderPage();
-        });
+        backBtn = makeBtn("← Back", false);
+        backBtn.addActionListener(e -> { currentPage--; renderPage(); });
 
-        nextBtn = createNavButton("Next →", true);
-        nextBtn.addActionListener(e -> {
-            currentPage++;
-            renderPage();
-        });
+        nextBtn = makeBtn("Next →", true);
+        nextBtn.addActionListener(e -> { currentPage++; renderPage(); });
 
-        homeBtn = createNavButton("⌂ Home", false);
+        homeBtn = makeBtn("⌂ Home", false);
         homeBtn.addActionListener(e -> onBack.run());
 
         navRow.add(backBtn);
@@ -196,65 +195,67 @@ public class ContentPanel extends JPanel {
     }
 
     private JPanel buildQuizPrompt() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBackground(new Color(0xEEEDFE));
-        panel.setBorder(new CompoundBorder(
-            BorderFactory.createLineBorder(new Color(0xCECBF6)),
-            new EmptyBorder(14, 14, 14, 14)
+        JPanel p = new JPanel();
+        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+        p.setBackground(new Color(0xEEEDFE));
+        p.setBorder(new CompoundBorder(
+            BorderFactory.createLineBorder(new Color(0xCECBF6), 1),
+            new EmptyBorder(12, 14, 12, 14)
         ));
-        panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 150));
+        p.setMaximumSize(new Dimension(Integer.MAX_VALUE, 110));
 
-        JLabel icon = new JLabel("★ Topic Complete!", SwingConstants.CENTER);
-        icon.setFont(new Font("Arial", Font.BOLD, 15));
-        icon.setForeground(new Color(0x3C3489));
-        icon.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panel.add(icon);
-        panel.add(Box.createVerticalStrut(6));
+        JLabel title = new JLabel("★  Topic Complete!", SwingConstants.CENTER);
+        title.setFont(new Font("Arial", Font.BOLD, 14));
+        title.setForeground(new Color(0x3C3489));
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel sub = new JLabel("Test your knowledge with a quiz!", SwingConstants.CENTER);
         sub.setFont(new Font("Arial", Font.PLAIN, 12));
         sub.setForeground(new Color(0x534AB7));
         sub.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panel.add(sub);
-        panel.add(Box.createVerticalStrut(10));
 
-        JButton quizBtn = new JButton("Take the Quiz →");
-        quizBtn.setFont(new Font("Arial", Font.BOLD, 13));
-        quizBtn.setBackground(new Color(0x7F77DD));
-        quizBtn.setForeground(WHITE);
-        quizBtn.setOpaque(true);
-        quizBtn.setBorderPainted(false);
-        quizBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        quizBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 36));
-        quizBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        quizBtn.addActionListener(e -> onComplete.run());
-        panel.add(quizBtn);
-
-        return panel;
-    }
-
-    private JButton createNavButton(String text, boolean primary) {
-        JButton btn = new JButton(text);
+        JButton btn = new JButton("Take the Quiz →");
         btn.setFont(new Font("Arial", Font.BOLD, 13));
-        if (primary) {
-            btn.setBackground(GREEN);
-            btn.setForeground(WHITE);
-        } else {
-            btn.setBackground(new Color(0xF0F0F0));
-            btn.setForeground(TEXT_DARK);
-        }
+        btn.setBackground(new Color(0x7F77DD));
+        btn.setForeground(WHITE);
         btn.setOpaque(true);
         btn.setBorderPainted(false);
+        btn.setFocusPainted(false);
+        btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 36));
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        return btn;
+        btn.addActionListener(e -> onComplete.run());
+
+        p.add(title);
+        p.add(Box.createVerticalStrut(4));
+        p.add(sub);
+        p.add(Box.createVerticalStrut(10));
+        p.add(btn);
+        return p;
+    }
+
+    private JButton makeBtn(String text, boolean primary) {
+        JButton b = new JButton(text);
+        b.setFont(new Font("Arial", Font.BOLD, 13));
+        b.setOpaque(true);
+        b.setBorderPainted(false);
+        b.setFocusPainted(false);
+        b.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        if (primary) {
+            b.setBackground(GREEN);
+            b.setForeground(WHITE);
+        } else {
+            b.setBackground(new Color(0xEEEEEE));
+            b.setForeground(TEXT_DARK);
+        }
+        return b;
     }
 
     // ── Public API ────────────────────────────────────────────────────────────
     public void loadTopic(String topicName, List<LearningContent> topicPages) {
         this.pages       = topicPages;
         this.currentPage = 0;
-        titleLabel.setText(topicName);
+        topicTitleLabel.setText(topicName);
         renderPage();
     }
 
@@ -262,78 +263,63 @@ public class ContentPanel extends JPanel {
         LearningContent page = pages.get(currentPage);
         int total = pages.size();
 
-        // Page dots
+        // Badge
+        badgeLabel.setText("Page " + (currentPage + 1) + "/" + total);
+        Color theme     = parseColor(page.getColorTheme());
+        Color themLight = tint(theme);
+        badgeLabel.setBackground(themLight);
+        badgeLabel.setForeground(theme.darker());
+
+        // Dots
         dotsPanel.removeAll();
         for (int i = 0; i < total; i++) {
             JPanel dot = new JPanel();
-            dot.setBackground(i == currentPage ? GREEN : new Color(0xCCCCCC));
-            int w = (i == currentPage) ? 18 : 8;
+            int w = (i == currentPage) ? 20 : 8;
             dot.setPreferredSize(new Dimension(w, 8));
-            dot.setBorder(BorderFactory.createLineBorder(
-                i == currentPage ? GREEN : new Color(0xCCCCCC)));
+            dot.setBackground(i == currentPage ? GREEN : new Color(0xCCCCCC));
+            dot.setBorder(null);
             dotsPanel.add(dot);
         }
         dotsPanel.revalidate();
+        dotsPanel.repaint();
 
-        // Icon / image area
-        Color theme = parseColor(page.getColorTheme());
-        Color lightTheme = blend(theme, WHITE, 0.15f);
-        iconPanel.setBackground(lightTheme);
+        // Image
+        imageLabel.setBackground(themLight);
+        imageLabel.setIcon(null);
+        imageLabel.setText(iconFor(page.getIconName()));
+        imageLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 48));
+        imageLabel.setForeground(theme);
 
-        // Load image from assets folder
         String imgPath = page.getImagePath();
-        java.io.File imgFile = new java.io.File(imgPath);
-        if (!imgFile.exists()) {
-            String base = System.getProperty("user.dir");
-            imgFile = new java.io.File(base + java.io.File.separator + imgPath);
-        }
-        boolean loaded = false;
-        if (imgFile.exists()) {
-            try {
-                java.awt.image.BufferedImage raw = javax.imageio.ImageIO.read(imgFile);
-                if (raw != null) {
-                    // Scale to fill panel width, maintain aspect ratio
-                    int panelW = 350;
-                    int panelH = 180;
-                    double scaleX = (double) panelW / raw.getWidth();
-                    double scaleY = (double) panelH / raw.getHeight();
-                    double scale  = Math.min(scaleX, scaleY);
-                    int newW = (int)(raw.getWidth()  * scale);
-                    int newH = (int)(raw.getHeight() * scale);
-                    java.awt.Image scaled = raw.getScaledInstance(
-                        newW, newH, java.awt.Image.SCALE_SMOOTH);
-                    iconLabel.setIcon(new ImageIcon(scaled));
-                    iconLabel.setText("");
-                    loaded = true;
-                }
-            } catch (Exception ex) {
-                System.out.println("Image load error: " + ex.getMessage());
-            }
-        }
-        if (!loaded) {
-            iconLabel.setIcon(null);
-            iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 52));
-            iconLabel.setText(iconFor(page.getIconName()));
-            iconLabel.setForeground(theme);
+        // Extract just the filename from the path
+        String filename = new java.io.File(imgPath).getName();
+        ImageIcon icon = ImageLoader.load(filename, 362, 150);
+        if (icon != null) {
+            imageLabel.setIcon(icon);
+            imageLabel.setText("");
+        } else {
+            imageLabel.setIcon(null);
+            imageLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 48));
+            imageLabel.setText(iconFor(page.getIconName()));
+            imageLabel.setForeground(theme);
         }
 
-        // Texts
+        // Title
         pageTitleLabel.setText(page.getTitle());
+
+        // Body
         bodyText.setText(page.getContent());
 
         // Fact box
-        factBox.setBackground(lightTheme);
+        factBox.setBackground(themLight);
         factLabelLbl.setText(page.getFactLabel().toUpperCase());
         factLabelLbl.setForeground(theme.darker());
         factTextArea.setText(page.getFactText());
         factTextArea.setForeground(theme.darker().darker());
-        factBox.setMaximumSize(new Dimension(Integer.MAX_VALUE,
-            80 + page.getFactText().split("\n").length * 18));
-
-        // Badge
-        badgeLabel.setText("Page " + (currentPage + 1) + "/" + total);
-        badgeLabel.setBackground(lightTheme);
-        badgeLabel.setForeground(theme.darker());
+        factBox.setBorder(new CompoundBorder(
+            BorderFactory.createLineBorder(theme, 1),
+            new EmptyBorder(10, 12, 10, 12)
+        ));
 
         // Quiz prompt on last page
         quizPrompt.setVisible(currentPage == total - 1);
@@ -343,40 +329,48 @@ public class ContentPanel extends JPanel {
         nextBtn.setVisible(currentPage < total - 1);
         homeBtn.setVisible(true);
 
+        // Scroll back to top
+        SwingUtilities.invokeLater(() -> {
+            Container c = getParent();
+            while (c != null) {
+                if (c instanceof JScrollPane) {
+                    ((JScrollPane) c).getVerticalScrollBar().setValue(0);
+                    break;
+                }
+                c = c.getParent();
+            }
+        });
+
         revalidate();
         repaint();
     }
 
+    // ── Helpers ───────────────────────────────────────────────────────────────
     private Color parseColor(String hex) {
-        try { return Color.decode(hex); }
-        catch (Exception e) { return GREEN; }
+        try { return Color.decode(hex); } catch (Exception e) { return GREEN; }
     }
 
-    private Color blend(Color c, Color bg, float alpha) {
-        int r = (int)(c.getRed()   * alpha + bg.getRed()   * (1 - alpha));
-        int g = (int)(c.getGreen() * alpha + bg.getGreen() * (1 - alpha));
-        int b = (int)(c.getBlue()  * alpha + bg.getBlue()  * (1 - alpha));
-        // Use a fixed light background tint
+    private Color tint(Color c) {
         return new Color(
-            Math.min(255, c.getRed()   / 4 + 200),
-            Math.min(255, c.getGreen() / 4 + 200),
-            Math.min(255, c.getBlue()  / 4 + 200)
+            Math.min(255, c.getRed()   / 5 + 210),
+            Math.min(255, c.getGreen() / 5 + 210),
+            Math.min(255, c.getBlue()  / 5 + 210)
         );
     }
 
     private String iconFor(String name) {
         switch (name) {
-            case "brain":            return "🧠";
-            case "run":              return "🏃";
-            case "virus":            return "🦠";
-            case "stethoscope":      return "🩺";
-            case "needle":           return "💉";
-            case "apple":            return "🍎";
-            case "building-hospital":return "🏥";
-            case "ban":              return "🚭";
-            case "map-pin":          return "📍";
-            case "hand":             return "✋";
-            default:                 return "❤";
+            case "brain":             return "🧠";
+            case "run":               return "🏃";
+            case "virus":             return "🦠";
+            case "stethoscope":       return "🩺";
+            case "needle":            return "💉";
+            case "apple":             return "🍎";
+            case "building-hospital": return "🏥";
+            case "ban":               return "🚭";
+            case "map-pin":           return "📍";
+            case "hand":              return "✋";
+            default:                  return "❤";
         }
     }
 }
