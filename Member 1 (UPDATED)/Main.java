@@ -54,25 +54,53 @@ public class Main {
                 }
             );
 
-            // ── Quiz Module (Member 2) ────────────────────────────────────────
-            // QuizManager is the real quiz panel built by Member 2.
-            // When the user finishes, it switches back to the Learning screen.
-            QuizManager quizPanel = new QuizManager(() -> {
+            // ── Gamification Module (Member 3 - Izwan bin Omar) ────────────────
+            // This module displays rewards after the user completes the quiz.
+            // It receives the quiz score from QuizManager and shows:
+            // badge, stars, points, rank, and motivational message.
+            GamificationEngine gamePanel = new GamificationEngine(() -> {
+                // When the user clicks "Back to Home" in the reward screen,
+                // the app returns to the Learning Module home screen.
                 mainLayout.show(mainContainer, "LEARNING");
             });
 
-            JPanel gamePlaceholder = createPlaceholder(
-                "Gamification", "Member 3 — GamificationEngine",
-                new Color(0xBA7517), new Color(0xFAEEDA));
+            // ── Quiz Module (Member 2) ─────────────────────────────────────────
+            // The quiz panel calculates the user's score, total questions,
+            // and percentage after all quiz questions are answered.
+            //
+            // An array holder is used because quizPanel needs to be accessed
+            // inside its own callback after the QuizManager object is created.
+            final QuizManager[] quizHolder = new QuizManager[1];
+
+            quizHolder[0] = new QuizManager(() -> {
+                // Pass the final quiz result to Member 3's GamificationEngine.
+                // The reward screen will generate the correct badge, points,
+                // stars, rank, and motivational message based on the percentage.
+                gamePanel.showReward(
+                    quizHolder[0].getScore(),
+                    quizHolder[0].getTotal(),
+                    quizHolder[0].getPercent()
+                );
+
+                // After the quiz result is processed, switch to the
+                // Gamification screen instead of going directly back home.
+                mainLayout.show(mainContainer, "GAME");
+            });
+
+            // Store the created QuizManager object in a normal variable
+            // so it can be added into the main CardLayout container.
+            QuizManager quizPanel = quizHolder[0];
 
             JPanel profilePlaceholder = createPlaceholder(
                 "User Profile", "Member 4 — UserProfile",
                 new Color(0xD85A30), new Color(0xFAECE7));
 
-            mainContainer.add(learningPanel,  "LEARNING");
-            mainContainer.add(quizPanel,      "QUIZ");
-            mainContainer.add(gamePlaceholder,   "GAME");
-            mainContainer.add(profilePlaceholder,"PROFILE");
+            // Add all modules into the main CardLayout container.
+            // Each screen can be displayed using its card name.
+            mainContainer.add(learningPanel,       "LEARNING");
+            mainContainer.add(quizPanel,           "QUIZ");
+            mainContainer.add(gamePanel,           "GAME");     // Member 3 module
+            mainContainer.add(profilePlaceholder,  "PROFILE");
 
             // Start on Learning Module
             mainLayout.show(mainContainer, "LEARNING");
