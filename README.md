@@ -1,32 +1,7 @@
 # SDG 3 Health & Well-Being App
 ### TMF 2954 Java Programming — Group Project
 
----
 
-## How to Compile and Run
-
-### Windows
-Double-click `compile_and_run.bat`, or run it in Command Prompt:
-```
-compile_and_run.bat
-```
-
-### Mac / Linux
-```bash
-chmod +x compile_and_run.sh
-./compile_and_run.sh
-```
-
-### Manual (any OS)
-```bash
-mkdir out
-javac -cp src -d out src/*.java
-java -cp out Main
-```
-
-**Requires Java 11 or later.**
-
----
 
 ## Project Structure
 
@@ -93,11 +68,4 @@ SDG-App/
 
 ---
 
-## Members
 
-| Member | Name                              | Student ID | Role |
-|--------|-----------------------------------|------------|------|
-| 1      | Victoria Ngui Fong Eik            | 106647     | Learning Module |
-| 2      | Nurirzam Zeana Binti Muhammad Zamri | 102885   | Quiz Module |
-| 3      | Izwan bin Omar                    | —          | Gamification Module |
-| 4      | Kayla Binti Mohamad               | 102641     | User Profile & App Integration |
