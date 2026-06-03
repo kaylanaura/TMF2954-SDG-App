@@ -34,6 +34,10 @@ public class LearningContent implements Displayable {
     }
 
     // ── Displayable interface implementation ──────────────────────────────────
+    /**
+     * Outputs a complete, structured text representation of the learning page 
+     * to the console console window for debugging or text-mode rendering.
+     */
     @Override
     public void display() {
         System.out.println("========================================");
