@@ -10,6 +10,21 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.border.*;
 
+/**
+ * ContentPanel — Swing JPanel that renders paginated learning content.
+ *
+ * Each "page" is a LearningContent object containing:
+ *   - title, body text, fact label & fact text
+ *   - image path and emoji-style icon fallback
+ *   - colour theme used to tint the page accent
+ *
+ * The panel provides:
+ *   - Horizontal dot navigation to indicate current page
+ *   - "Back / Next / Home" footer buttons
+ *   - A quiz prompt banner that appears only on the final page
+ *   - Automatic scroll-to-top when the page changes
+ */
+
 public class ContentPanel extends JPanel {
 
     // ── Colours ───────────────────────────────────────────────────────────────
@@ -86,12 +101,14 @@ public class ContentPanel extends JPanel {
         add(header, BorderLayout.NORTH);
 
         // ── SCROLLABLE BODY ───────────────────────────────────────────────────
+        // A vertical BoxLayout that holds dots, image, title, body text,
+        // the fact box, and the optional quiz prompt.
         JPanel body = new JPanel();
         body.setLayout(new BoxLayout(body, BoxLayout.Y_AXIS));
         body.setBackground(BG_PAGE);
         body.setBorder(new EmptyBorder(10, 14, 10, 14));
 
-        // Page dots
+        // Page dots - visual page indicator
         dotsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 4, 0));
         dotsPanel.setOpaque(false);
         dotsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -195,6 +212,10 @@ public class ContentPanel extends JPanel {
         add(navRow, BorderLayout.SOUTH);
     }
 
+    /**
+     * Builds the purple quiz-prompt banner that appears at the end of a topic.
+     * Contains a title, subtitle, and a button that triggers onComplete.
+     */
     private JPanel buildQuizPrompt() {
         JPanel p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
@@ -298,7 +319,7 @@ public class ContentPanel extends JPanel {
         imageLabel.setForeground(theme);
 
         String imgPath = page.getImagePath();
-        // Extract just the filename from the path
+        // Extract just the filename so ImageLoader can resolve it from its resource path
         String filename = new java.io.File(imgPath).getName();
         ImageIcon icon = ImageLoader.load(filename, 362, 150);
         if (icon != null) {
@@ -328,13 +349,13 @@ public class ContentPanel extends JPanel {
             new EmptyBorder(10, 12, 10, 12)
         ));
 
-        // Quiz prompt on last page
+        // Quiz prompt on last page - only visible when the user reaches the final page
         quizPrompt.setVisible(currentPage == total - 1);
 
         // Nav buttons
-        backBtn.setVisible(currentPage > 0);
-        nextBtn.setVisible(currentPage < total - 1);
-        homeBtn.setVisible(true);
+        backBtn.setVisible(currentPage > 0);            // hide on first page
+        nextBtn.setVisible(currentPage < total - 1);    // hide on last page
+        homeBtn.setVisible(true);                       // always visible
 
         // Scroll back to top
         SwingUtilities.invokeLater(() -> {
