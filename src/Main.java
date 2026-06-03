@@ -1,6 +1,6 @@
 // Class      : Main
-// Creator    : [Member 4 Name]  ← Member 4 owns this file
-// Tester     : [Member 1 Name]
+// Creator    : Kayla binti Mohamad 102641
+// Tester     : Victoria Ngui Fong Eik 106647
 // Description: Entry point for the SDG 3 Health & Well-Being desktop app.
 //              Sets up the main JFrame with smartphone-sized dimensions
 //              and launches the Learning Module.
