@@ -12,17 +12,25 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+/**
+ * The ImageLoader class provides robust, automated utility methods to look up, 
+ * read, and scale images from various local directory environments.
+ */
+
 public class ImageLoader {
 
     public static ImageIcon load(String filename, int width, int height) {
+        // Generate a comprehensive list of potential file locations
         List<String> paths = buildSearchPaths(filename);
 
+        // Iterate through the generated path combinations to find the file
         for (String path : paths) {
             File f = new File(path);
             if (f.exists() && f.isFile()) {
                 try {
                     BufferedImage raw = ImageIO.read(f);
                     if (raw != null) {
+                        // Calculate aspect ratio scaling factor to prevent image distortion
                         double scale = Math.min(
                             (double) width  / raw.getWidth(),
                             (double) height / raw.getHeight()
@@ -30,10 +38,12 @@ public class ImageLoader {
                         int w = (int)(raw.getWidth()  * scale);
                         int h = (int)(raw.getHeight() * scale);
                         System.out.println("[ImageLoader] Found: " + f.getAbsolutePath());
+                        // Return scaled image using high-quality smooth scaling
                         return new ImageIcon(raw.getScaledInstance(
                             w, h, Image.SCALE_SMOOTH));
                     }
                 } catch (Exception e) { /* try next */ }
+                /* Silently catch reading errors and try the next path sequence */
             }
         }
 
@@ -43,6 +53,7 @@ public class ImageLoader {
             try {
                 BufferedImage raw = ImageIO.read(found);
                 if (raw != null) {
+                    // Recalculate scaling for the file found through deep search
                     double scale = Math.min(
                         (double) width  / raw.getWidth(),
                         (double) height / raw.getHeight()
@@ -52,20 +63,22 @@ public class ImageLoader {
                     System.out.println("[ImageLoader] Found by search: " + found.getAbsolutePath());
                     return new ImageIcon(raw.getScaledInstance(w, h, Image.SCALE_SMOOTH));
                 }
-            } catch (Exception e) { /* fall through */ }
+            } catch (Exception e) { /* fall through if image processing fails */ }
         }
 
+        // Log a failure message if all lookups and searches fail
         System.out.println("[ImageLoader] NOT FOUND: " + filename);
         return null;
     }
 
     private static List<String> buildSearchPaths(String filename) {
         List<String> paths = new ArrayList<>();
-        String s   = File.separator;
-        String dir = System.getProperty("user.dir");
-        String home = System.getProperty("user.home");
+        String s   = File.separator;                    // Dynamic OS file seperator ('/' or '\')
+        String dir = System.getProperty("user.dir");    // Current project working directory
+        String home = System.getProperty("user.home");  // User's operating system home directory
 
         // All common subfolder names
+        // List of all conventional asset/image directory patterns used in the project
         String[] folders = {
             "assets" + s + "final_images",
             "assets" + s + "images",
@@ -74,9 +87,10 @@ public class ImageLoader {
             "final_images",
             "resources",
             "res",
-            ""
+            "" // Empty string handles direct root filename evaluations
         };
 
+        // Combine subfolders with various system access strategies (Relative, Absolute, Desktop, Downloads)
         for (String folder : folders) {
             String base = folder.isEmpty() ? filename : folder + s + filename;
             paths.add(base);                          // relative
@@ -86,13 +100,14 @@ public class ImageLoader {
             paths.add(home + s + "Downloads" + s + base);
         }
 
-        // Hardcoded fallback for common Windows project locations
+// Fallback for common Windows project locations and current batch execution directory
         String[] winRoots = {
+            dir,                  // Dynamically points to your active project/bat directory
             home + s + "Desktop",
             home + s + "Documents",
-            home + s + "Downloads",
-            "C:\\Users\\User\\Desktop\\FONG EIK\\SE\\YEAR 2\\SEM 2\\JAVA PROGRAMMING\\JAVA PROJECT",
+            home + s + "Downloads"
         };
+        
         for (String root : winRoots) {
             paths.add(root + s + "assets" + s + "final_images" + s + filename);
             paths.add(root + s + "assets" + s + filename);
