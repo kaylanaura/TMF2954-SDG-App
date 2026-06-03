@@ -1,5 +1,6 @@
 // Class      : TrueFalseQuestion
 // Creator    : NURIRZAM ZEANA BINTI MUHAMMAD ZAMRI (102885)
+// Tester     : Kayla Binti Mohamad (102641)
 // Description: Represents a True or False question.
 //              Implements the Answerable interface so QuizManager can handle
 //              it the same way as all other question types.

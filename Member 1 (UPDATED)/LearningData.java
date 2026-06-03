@@ -1,6 +1,6 @@
 // Class      : LearningData
 // Creator    : Victoria Ngui Fong Eik (106647)
-// Tester     : [Member 2 Name]
+// Tester     : NURIRZAM ZEANA BINTI MUHAMMAD ZAMRI (102885)
 // Description: Provides all LearningContent data for the 10 SDG 3 topics.
 //              Each page now includes an imagePath pointing to assets/final_images/.
 

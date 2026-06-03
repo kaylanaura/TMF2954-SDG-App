@@ -1,5 +1,6 @@
 // Class      : QuizManager
 // Creator    : NURIRZAM ZEANA BINTI MUHAMMAD ZAMRI (102885)
+// Tester     : Kayla Binti Mohamad (102641)
 // Description: The main class for the Quiz Module. It stores all 20+ questions,
 //              tracks the user's score, checks answers, and shows the result with
 //              a motivational message. It also saves scores to a text file.
@@ -7,11 +8,10 @@
 //              Interacts with GamificationEngine to trigger badges and points.
 
 import java.awt.*;
-import java.awt.event.*;
 import java.io.*;
 import java.util.*;
-import java.util.List;   // explicit import to avoid clash with java.awt.List
-import javax.swing.*;
+import java.util.List;
+import javax.swing.*;   // explicit import to avoid clash with java.awt.List
 import javax.swing.border.*;
 
 public class QuizManager extends JPanel {

@@ -26,6 +26,7 @@ public class ContentPanel extends JPanel {
     private int currentPage = 0;
     private Runnable onBack;
     private Runnable onComplete;
+    private String currentTopicName = ""; // stores the name of the topic being viewed
 
     // ── UI components ─────────────────────────────────────────────────────────
     private JLabel    topicTitleLabel;
@@ -253,10 +254,16 @@ public class ContentPanel extends JPanel {
 
     // ── Public API ────────────────────────────────────────────────────────────
     public void loadTopic(String topicName, List<LearningContent> topicPages) {
-        this.pages       = topicPages;
-        this.currentPage = 0;
+        this.pages            = topicPages;
+        this.currentPage      = 0;
+        this.currentTopicName = topicName; // remember which topic is open
         topicTitleLabel.setText(topicName);
         renderPage();
+    }
+
+    // Returns the name of the topic currently being displayed
+    public String getCurrentTopicName() {
+        return currentTopicName;
     }
 
     private void renderPage() {

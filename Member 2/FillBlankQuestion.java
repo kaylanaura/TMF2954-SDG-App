@@ -1,5 +1,6 @@
 // Class      : FillBlankQuestion
 // Creator    : NURIRZAM ZEANA BINTI MUHAMMAD ZAMRI (102885)
+// Tester     : Kayla Binti Mohamad (102641)
 // Description: Represents a fill-in-the-blank question where the user
 //              types their answer into a text field.
 //              Implements the Answerable interface so QuizManager can handle

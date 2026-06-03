@@ -10,6 +10,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import java.util.List;
+import java.util.function.Consumer; // used for onTopicComplete callback
 import javax.swing.*;
 import javax.swing.border.*;
 
@@ -39,14 +40,17 @@ public class LearningModulePanel extends JPanel {
     private JPanel       cardsGrid;
 
     // Callbacks to other modules
-    private Runnable onAllComplete;  // called when all 10 topics done
-    private Runnable onGoToQuiz;     // called when user clicks "Take the Quiz" button
+    private Runnable onAllComplete;          // called when all 10 topics done
+    private Runnable onGoToQuiz;             // called when user clicks "Take the Quiz" button
+    private Consumer<String> onTopicComplete; // called with the topic name when one topic is done
 
-    public LearningModulePanel(Runnable onAllComplete, Runnable onGoToQuiz) {
-        this.onAllComplete = onAllComplete;
-        this.onGoToQuiz    = onGoToQuiz;
-        this.allTopics     = LearningData.getAllTopics();
-        this.completed     = new boolean[allTopics.size()];
+    public LearningModulePanel(Runnable onAllComplete, Runnable onGoToQuiz,
+                                Consumer<String> onTopicComplete) {
+        this.onAllComplete    = onAllComplete;
+        this.onGoToQuiz       = onGoToQuiz;
+        this.onTopicComplete  = onTopicComplete;
+        this.allTopics        = LearningData.getAllTopics();
+        this.completed        = new boolean[allTopics.size()];
 
         cardLayout     = new CardLayout();
         cardContainer  = new JPanel(cardLayout);
@@ -208,12 +212,14 @@ public class LearningModulePanel extends JPanel {
     }
 
     private void handleTopicComplete() {
-        // Find which topic just completed based on content panel's current topic
-        // Mark all topics with matching names as done
+        // Get the name of the topic that was just finished
+        String finishedTopic = contentPanel.getCurrentTopicName();
+
+        // Count how many are already done before this one
         completedCount = 0;
         for (boolean b : completed) if (b) completedCount++;
 
-        // Simple: increment until all done
+        // Mark the next uncompleted topic as done in our array
         for (int i = 0; i < completed.length; i++) {
             if (!completed[i]) {
                 completed[i] = true;
@@ -221,6 +227,11 @@ public class LearningModulePanel extends JPanel {
                 markCardDone(i);
                 break;
             }
+        }
+
+        // Notify Member 4's UserProfile that this topic is now complete
+        if (onTopicComplete != null && !finishedTopic.isEmpty()) {
+            onTopicComplete.accept(finishedTopic);
         }
 
         updateProgress();

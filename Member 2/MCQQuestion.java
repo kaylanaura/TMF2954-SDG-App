@@ -1,5 +1,6 @@
 // Class      : MCQQuestion
 // Creator    : NURIRZAM ZEANA BINTI MUHAMMAD ZAMRI (102885)
+// Tester     : Kayla Binti Mohamad (102641)
 // Description: Represents a multiple-choice question with 4 options (A/B/C/D).
 //              Implements the Answerable interface so QuizManager can handle
 //              it the same way as all other question types.

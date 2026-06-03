@@ -1,6 +1,6 @@
 // Interface  : Displayable
 // Creator    : Victoria Ngui Fong Eik (106647)
-// Tester     : [Member 2 Name]
+// Tester     : NURIRZAM ZEANA BINTI MUHAMMAD ZAMRI (102885)
 // Description: Defines the contract for any content that can be displayed
 //              in the Learning Module. All content pages must implement this.
 

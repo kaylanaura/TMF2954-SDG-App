@@ -1,5 +1,6 @@
 // Interface  : Answerable
 // Creator    : NURIRZAM ZEANA BINTI MUHAMMAD ZAMRI (102885)
+// Tester     : Kayla Binti Mohamad (102641)
 // Description: Defines the contract that every question type must follow.
 //              Any question class (MCQ, TrueFalse, FillBlank) must implement
 //              this interface. This ensures QuizManager can handle all question

@@ -1,5 +1,6 @@
 // Interface  : Rewardable
 // Creator    : Izwan bin Omar
+// Tester     : Kayla Binti Mohamad (102641)
 // Description: Defines reward behaviour for the Gamification Module.
 
 public interface Rewardable {

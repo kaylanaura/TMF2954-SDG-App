@@ -1,6 +1,6 @@
 // Class      : LearningContent
 // Creator    : Victoria Ngui Fong Eik (106647)
-// Tester     : [Member 2 Name]
+// Tester     : NURIRZAM ZEANA BINTI MUHAMMAD ZAMRI (102885)
 // Description: Stores all data for a single educational content page.
 //              Implements Displayable to provide a consistent content contract.
 //              Used by LearningModulePanel to populate the learning screens.

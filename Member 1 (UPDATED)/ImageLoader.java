@@ -1,6 +1,6 @@
 // Class      : ImageLoader
 // Creator    : Victoria Ngui Fong Eik (106647)
-// Tester     : [Member 2 Name]
+// Tester     : NURIRZAM ZEANA BINTI MUHAMMAD ZAMRI (102885)
 // Description: Handles all image loading for the Learning Module.
 //              Searches every possible location automatically.
 
