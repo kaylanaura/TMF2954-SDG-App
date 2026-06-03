@@ -6,13 +6,13 @@ echo ========================================
 echo.
 
 echo [1/2] Compiling all Java files...
-javac -cp . ^
-  src\Member1_LearningContent\LearningModulePanel.java ^
-  src\Member1_LearningContent\ContentPanel.java ^
+javac -cp . -d . ^
+  src\Member1_LearningContent\Displayable.java ^
   src\Member1_LearningContent\LearningContent.java ^
   src\Member1_LearningContent\LearningData.java ^
   src\Member1_LearningContent\ImageLoader.java ^
-  src\Member1_LearningContent\Displayable.java ^
+  src\Member1_LearningContent\ContentPanel.java ^
+  src\Member1_LearningContent\LearningModulePanel.java ^
   src\Member2_Quiz\Answerable.java ^
   src\Member2_Quiz\MCQQuestion.java ^
   src\Member2_Quiz\TrueFalseQuestion.java ^
@@ -25,7 +25,7 @@ javac -cp . ^
   src\Member4_UserProfile\Person.java ^
   src\Member4_UserProfile\ProgressRecord.java ^
   src\Member4_UserProfile\UserProfile.java ^
-  src\Member4_UserProfile\Main.java
+  Main.java
 
 if %errorlevel% neq 0 (
     echo.
