@@ -11,6 +11,7 @@ import java.util.Map;
 
 public class LearningData {
 
+    // Global constant defining the base directory path for UI graphic assets
     private static final String IMG = "assets/final_images/";
 
     public static Map<String, List<LearningContent>> getAllTopics() {
