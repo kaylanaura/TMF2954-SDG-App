@@ -3,7 +3,6 @@
 // Tester     : Kayla Binti Mohamad (102641)
 // Description: Defines reward behaviour for the Gamification Module.
 //
-// Lecture Concept Applied:
 // Interface:
 // - An interface contains abstract method headers without method bodies.
 // - Any class that implements this interface must provide the method definitions.
