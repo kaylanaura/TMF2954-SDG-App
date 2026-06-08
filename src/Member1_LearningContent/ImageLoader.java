@@ -4,13 +4,25 @@
 // Description: Handles all image loading for the Learning Module.
 //              Searches every possible location automatically.
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import javax.imageio.ImageIO;
-import javax.swing.*;
+// ── WHAT DOES THIS CLASS DO? ─────────────────────────────────────────────────
+// ImageLoader is a UTILITY CLASS — it provides static helper methods for
+// loading and scaling image files from disk.
+
+// ── KEY CONCEPTS IN THIS FILE ────────────────────────────────────────────────
+// 1. UTILITY CLASS   : Has no constructor; all methods are static.
+// 2. STATIC METHODS  : Called on the class, not on an object instance.
+// 3. ArrayList       : Used to build a dynamic list of paths to try.
+// 4. RECURSION       : searchDir() calls ITSELF to search sub-folders.
+// 5. try/catch       : Exception handling — gracefully handles missing/broken files.
+// ─────────────────────────────────────────────────────────────────────────────
+
+import java.awt.*;              // For Image, used in scaling
+import java.awt.image.BufferedImage; // For reading raw pixel image data
+import java.io.File;            // For representing and checking file paths
+import java.util.ArrayList;     // For building the dynamic list of paths to try
+import java.util.List;          // Interface type for the list
+import javax.imageio.ImageIO;   // Java's built-in image file reader
+import javax.swing.*;           // For ImageIcon — the Swing image wrapper used in UI labels
 
 /**
  * The ImageLoader class provides robust, automated utility methods to look up, 
@@ -18,6 +30,11 @@ import javax.swing.*;
  */
 
 public class ImageLoader {
+   // METHOD: load()
+    // ── PURPOSE ───────────────────────────────────────────────────────────────
+    // Given a filename and target dimensions, search all known folder locations
+    // for the image file, load it, scale it to fit within width x height
+    // while preserving aspect ratio, and return it as an ImageIcon. 
 
     public static ImageIcon load(String filename, int width, int height) {
         // Generate a comprehensive list of potential file locations
@@ -120,15 +137,37 @@ public class ImageLoader {
     // Recursively search a directory up to maxDepth levels deep
     private static File searchDir(File dir, String filename, int maxDepth) {
         if (maxDepth < 0 || !dir.exists() || !dir.isDirectory()) return null;
+
+        // dir.listFiles() → returns an array of all files and subfolders in 'dir'
+        // Returns null if the directory can't be read (permission error, etc.)
         File[] files = dir.listFiles();
         if (files == null) return null;
+        
+        // Loop through every item in the directory
         for (File f : files) {
-            if (f.isFile() && f.getName().equals(filename)) return f;
+            
+            // If this item is a file and its name matches what we're looking for, return it.
+            // f.getName() → just the filename (not the full path), e.g. "02_mental_health.png"
+            if (f.isFile() && f.getName().equals(filename)) return f; // FOUND IT
             if (f.isDirectory()) {
-                File found = searchDir(f, filename, maxDepth - 1);
-                if (found != null) return found;
+                File found = searchDir(f, filename, maxDepth - 1); // RECURSIVE CALL
+                if (found != null) return found; // if the recursive call found it, pas it up
             }
         }
+        
+        // We searched the whole directory and found nothing — return null.
         return null;
     }
 }
+
+    // ── FINAL SUMMARY OF CONCEPTS IN THIS FILE ───────────────────────────────
+    // • UTILITY CLASS  : No constructor, all methods are static.
+    //                    Used by calling ImageLoader.load() directly.
+    // • STATIC METHODS : load(), buildSearchPaths(), searchDir() all static.
+    // • ArrayList      : Dynamic list of path strings built in buildSearchPaths().
+    // • try/catch      : Exception handling so broken images don't crash the app.
+    // • RECURSION      : searchDir() calls itself to explore subdirectories.
+    // • null           : Returned when the file is not found; caller must check for null.
+    // • Math.min()     : Used to compute aspect-ratio-preserving scale factor.
+    // • File.separator : Makes file paths work on both Windows (\) and Mac/Linux (/).
+    // ─────────────────────────────────────────────────────────────────────────
