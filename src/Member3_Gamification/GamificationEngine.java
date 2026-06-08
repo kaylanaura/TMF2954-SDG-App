@@ -4,7 +4,6 @@
 // Description: Handles badges, stars, points, rank, motivational messages,
 //              and reward score saving for the SDG 3 Health & Well-Being app.
 //
-// Lecture Concepts Applied:
 // 1. Custom Class and Object:
 //    - This class represents the Gamification Module object with its own data and behaviours.
 // 2. Encapsulation:
