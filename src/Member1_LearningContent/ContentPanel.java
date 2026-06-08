@@ -5,10 +5,25 @@
 //              Designed to fit within 390x700 smartphone resolution.
 //              Shows image, title, body text, fact box, and navigation.
 
-import java.awt.*;
-import java.util.List;
-import javax.swing.*;
-import javax.swing.border.*;
+// ── WHAT DOES THIS CLASS DO? ─────────────────────────────────────────────────
+// ContentPanel displays ONE topic's pages one at a time (like a slideshow).
+// It shows: image, title, body text, fact box, navigation buttons, and a
+// quiz prompt on the last page.
+//
+// ── KEY OOP CONCEPTS IN THIS FILE ────────────────────────────────────────────
+// 1. INHERITANCE      : 'extends JPanel' — ContentPanel IS a JPanel.
+//                        It inherits all panel functionality and adds our own.
+// 2. ENCAPSULATION    : Fields are private; only accessible via methods.
+// 3. CONSTRUCTOR      : Sets up callbacks and builds the UI.
+// 4. Runnable         : A functional interface used to pass "callback functions."
+// 5. LAMBDA (→)       : Short way to write anonymous Runnable/ActionListener.
+// 6. POLYMORPHISM     : @Override used where relevant from JPanel parent.
+// ─────────────────────────────────────────────────────────────────────────────
+
+import java.awt.*;              // Color, Font, BorderLayout, FlowLayout, etc.
+import java.util.List;          // List interface for the pages collection
+import javax.swing.*;           // All Swing GUI components: JPanel, JLabel, JButton, etc.
+import javax.swing.border.*;    // Border classes: EmptyBorder, CompoundBorder, MatteBorder
 
 /**
  * ContentPanel — Swing JPanel that renders paginated learning content.
@@ -28,45 +43,69 @@ import javax.swing.border.*;
 public class ContentPanel extends JPanel {
 
     // ── Colours ───────────────────────────────────────────────────────────────
-    private static final Color GREEN      = new Color(0x1D9E75);
-    private static final Color GREEN_DARK = new Color(0x085041);
-    private static final Color WHITE      = Color.WHITE;
-    private static final Color TEXT_DARK  = new Color(0x1A1A1A);
-    private static final Color TEXT_MED   = new Color(0x444444);
-    private static final Color BORDER_CLR = new Color(0xDDDDDD);
-    private static final Color BG_PAGE    = new Color(0xF8FFFE);
-
-    // ── State ─────────────────────────────────────────────────────────────────
-    private List<LearningContent> pages;
-    private int currentPage = 0;
-    private Runnable onBack;
-    private Runnable onComplete;
+    private static final Color GREEN      = new Color(0x1D9E75); // Primary green for buttons/accents
+    private static final Color GREEN_DARK = new Color(0x085041); // Darker green for back arrow button
+    private static final Color WHITE      = Color.WHITE;         // Pure white background
+    private static final Color TEXT_DARK  = new Color(0x1A1A1A); // Near-black for titles and important text
+    private static final Color TEXT_MED   = new Color(0x444444); // Medium grey for body paragraph text
+    private static final Color BORDER_CLR = new Color(0xDDDDDD); // Light grey for divider borders
+    private static final Color BG_PAGE    = new Color(0xF8FFFE); // Very pale green-white for the page background
+    
+    // ── State (NHERITANCE FIELDS) ─────────────────────────────────────────────────────────────────
+    // ── ENCAPSULATION ─────────────────────────────────────────────────────────
+    // 'private' → these fields are hidden from outside classes.
+    // They represent the current STATE of this panel.
+    private List<LearningContent> pages; // The list of pages for the currently loaded topic
+    private int currentPage = 0;         // Index of the page currently being shown (0-based)
+    private Runnable onBack;             // Callback: what to do when user clicks "Back to Home"
+    private Runnable onComplete;         // Callback: what to do when user completes the topic
     private String currentTopicName = ""; // stores the name of the topic being viewed
 
     // ── UI components ─────────────────────────────────────────────────────────
-    private JLabel    topicTitleLabel;
-    private JLabel    badgeLabel;
-    private JPanel    dotsPanel;
-    private JLabel    imageLabel;
-    private JLabel    pageTitleLabel;
-    private JTextArea bodyText;
-    private JPanel    factBox;
-    private JLabel    factLabelLbl;
-    private JTextArea factTextArea;
-    private JPanel    quizPrompt;
-    private JButton   backBtn;
-    private JButton   nextBtn;
-    private JButton   homeBtn;
+    // These are the Swing GUI components that make up the visible interface.
+    // They are declared here (as fields) so ALL methods in this class can access them.
+    // If declared inside a method, they'd be local variables and inaccessible elsewhere.
+    //══════════════════════════════════════════════════════════════════════════
+    private JLabel    topicTitleLabel; // Shows the current topic name in the header
+    private JLabel    badgeLabel;      // Shows "Page 2/3" badge in the top-right
+    private JPanel    dotsPanel;       // Contains the page indicator dots
+    private JLabel    imageLabel;      // Displays the topic image (or emoji fallback)
+    private JLabel    pageTitleLabel;  // Shows the specific page title
+    private JTextArea bodyText;        // Displays the main educational paragraph text
+    private JPanel    factBox;         // The coloured highlighted fact/tip box
+    private JLabel    factLabelLbl;    // Label inside fact box, e.g. "DID YOU KNOW?"
+    private JTextArea factTextArea;    // Text content inside the fact box
+    private JPanel    quizPrompt;      // The "Topic Complete! Take the Quiz" banner (last page only)
+    private JButton   backBtn;         // "← Back" button (hidden on first page)
+    private JButton   nextBtn;         // "Next →" button (hidden on last page)
+    private JButton   homeBtn;         // "⌂ Home" button (always visible)
 
+    // CONSTRUCTOR
+    // ── WHAT HAPPENS HERE ────────────────────────────────────────────────────
+    // When LearningModulePanel creates ContentPanel, it passes two Runnable
+    // callbacks (lambda expressions). This constructor stores them and builds the UI.
+    //
+    // 'public' → any class can create a ContentPanel
+    // 'Runnable onBack' → the lambda to call when user wants to go home
+    // 'Runnable onComplete' → the lambda to call when user finishes a topic
+    // ══════════════════════════════════════════════════════════════════════════
     public ContentPanel(Runnable onBack, Runnable onComplete) {
-        this.onBack     = onBack;
-        this.onComplete = onComplete;
+        tthis.onBack     = onBack;     // Store the "go home" callback
+        this.onComplete = onComplete; // Store the "topic finished" callback
+
+        // setLayout() is INHERITED from JPanel.
+        // BorderLayout divides the panel into NORTH, SOUTH, EAST, WEST, CENTER zones.
         setLayout(new BorderLayout());
-        setBackground(WHITE);
-        buildUI();
+        setBackground(WHITE); // Inherited from JComponent (Grandparen of JPanel)
+        buildUI(); // Call our private method ti construct all the sub components
     }
 
     private void buildUI() {
+        // ── PURPOSE ───────────────────────────────────────────────────────────────
+    // Constructs every visual element of the content viewer:
+    //   1. TOP HEADER  → back arrow, topic title, page badge
+    //   2. BODY        → dots, image, page title, body text, fact box, quiz prompt
+    //   3. BOTTOM NAV  → back, next, home buttons
 
         // ── TOP HEADER ────────────────────────────────────────────────────────
         JPanel header = new JPanel(new BorderLayout(8, 0));
@@ -76,7 +115,7 @@ public class ContentPanel extends JPanel {
             new EmptyBorder(10, 12, 10, 12)
         ));
 
-        JButton backArrow = new JButton("←");
+        JButton backArrow = new JButton("←"); // Back button arrow
         backArrow.setFont(new Font("Arial", Font.BOLD, 16));
         backArrow.setForeground(GREEN_DARK);
         backArrow.setBackground(new Color(0xE1F5EE));
@@ -84,21 +123,24 @@ public class ContentPanel extends JPanel {
         backArrow.setPreferredSize(new Dimension(36, 36));
         backArrow.setCursor(new Cursor(Cursor.HAND_CURSOR));
         backArrow.setFocusPainted(false);
-        backArrow.addActionListener(e -> onBack.run());
+        backArrow.addActionListener(e -> onBack.run()); // registers what to do when the button is clicked.
 
-        topicTitleLabel = new JLabel("Topic");
+        // ── TOPIC TITLE LABEL ─────────────────────────────────────────────────
+        topicTitleLabel = new JLabel("Topic"); // Placeholder text; updated by loadTopic()
         topicTitleLabel.setFont(new Font("Arial", Font.BOLD, 15));
         topicTitleLabel.setForeground(TEXT_DARK);
 
+        // ── PAGE BADGE ────────────────────────────────────────────────────────
         badgeLabel = new JLabel("Page 1/1");
         badgeLabel.setFont(new Font("Arial", Font.PLAIN, 11));
         badgeLabel.setOpaque(true);
         badgeLabel.setBorder(new EmptyBorder(3, 8, 3, 8));
 
+        // Add components to header using BorderLayout zones
         header.add(backArrow,        BorderLayout.WEST);
         header.add(topicTitleLabel,  BorderLayout.CENTER);
         header.add(badgeLabel,       BorderLayout.EAST);
-        add(header, BorderLayout.NORTH);
+        add(header, BorderLayout.NORTH); // inherited from JPanel → adds header to the NORTH zone of ContentPanel
 
         // ── SCROLLABLE BODY ───────────────────────────────────────────────────
         // A vertical BoxLayout that holds dots, image, title, body text,
@@ -402,3 +444,16 @@ public class ContentPanel extends JPanel {
         }
     }
 }
+
+// ── FINAL SUMMARY OF OOP CONCEPTS IN THIS FILE ───────────────────────────
+    // • INHERITANCE    : 'extends JPanel' — ContentPanel inherits all JPanel
+    //                    behaviour; add(), setBackground(), revalidate() etc.
+    //                    are all inherited, not written here.
+    // • ENCAPSULATION  : All fields private; accessed/modified only through
+    //                    loadTopic(), renderPage(), and the helper methods.
+    // • CONSTRUCTOR    : Takes two Runnable callbacks and calls buildUI().
+    // • Runnable/Lambda: onBack and onComplete store callback functions.
+    //                    'e -> onBack.run()' is a lambda (anonymous function).
+    // • POLYMORPHISM   : The same renderPage() updates every UI element by
+    //                    calling methods on the Displayable-implementing page object.
+    // • static final   : Colour constants are class-level, shared, and immutable.
