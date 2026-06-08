@@ -630,7 +630,7 @@ public class QuizManager extends JPanel {
         // Lambda: when clicked, call resetQuiz() — resets all state and goes back to Q1
 
         // Home / back button — returns to main menu
-        homeBtn = new JButton("Back to Home");
+        homeBtn = new JButton("View Reward");
         homeBtn.setFont(new Font("Arial", Font.BOLD, 14));
         homeBtn.setBackground(GREEN);
         homeBtn.setForeground(WHITE);
