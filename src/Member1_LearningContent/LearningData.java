@@ -4,15 +4,26 @@
 // Description: Provides all LearningContent data for the 10 SDG 3 topics.
 //              Each page now includes an imagePath pointing to assets/final_images/.
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+/** ── WHAT DOES THIS CLASS DO? ─────────────────────────────────────────────────
+* LearningData is a DATA STORE class.
+* It contains ONE static method that builds and returns ALL 10 topics
+* (each topic = a list of LearningContent pages).
+*/ 
+
+
+// These imports bring in Java's built-in collection classes.
+import java.util.ArrayList;        // a resizable array — used to hold pages per topic
+import java.util.LinkedHashMap;    // a Map that preserves insertion order
+import java.util.List;             // the interface type used for declaring page lists
+import java.util.Map;              // the interface type used for the topics container
 
 public class LearningData {
 
     // Global constant defining the base directory path for UI graphic assets
     private static final String IMG = "assets/final_images/";
+    // This is the base path for all image files.
+    // Using a constant means if the folder is renamed, you only update ONE line.
+    // Every LearningContent below uses IMG + "filename.png" to build the full path.
 
     public static Map<String, List<LearningContent>> getAllTopics() {
         Map<String, List<LearningContent>> topics = new LinkedHashMap<>();
@@ -223,3 +234,17 @@ public class LearningData {
         return topics;
     }
 }
+
+// ── FINAL SUMMARY OF OOP/JAVA CONCEPTS IN THIS FILE ─────────────────────
+    // • STATIC FIELD   : IMG is a class-level constant — shared, not per-object.
+    // • STATIC METHOD  : getAllTopics() is called as LearningData.getAllTopics()
+    //                    without needing to create a LearningData object.
+    // • COLLECTIONS    :
+    //     Map<String, List<LearningContent>> → maps topic names to page lists
+    //     LinkedHashMap → preserves insertion order for consistent display
+    //     ArrayList → resizable list to hold LearningContent pages per topic
+    // • OBJECT CREATION: 'new LearningContent(...)' — constructs page objects
+    //                    using the 9-parameter constructor in LearningContent.java
+    // • final          : IMG cannot be reassigned after declaration (constant)
+    // • private        : IMG is only usable inside this class
+    // ─────────────────────────────────────────────────────────────────────────
