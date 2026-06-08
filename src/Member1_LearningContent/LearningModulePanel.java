@@ -7,13 +7,19 @@
 //              2. onGoToQuiz     - Take the Quiz button pressed
 //              3. onTopicDone    - one topic completed (passes topic name)
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import java.util.List;
-import java.util.function.Consumer;
-import javax.swing.*;
-import javax.swing.border.*;
+// ── WHAT DOES THIS CLASS DO? ─────────────────────────────────────────────────
+// LearningModulePanel is the HOME SCREEN / DASHBOARD of the learning module.
+// It shows a scrollable grid of topic cards. When a card is tapped, it switches
+// to ContentPanel to show that topic's pages. It tracks which topics are done
+// and updates a progress bar.
+
+import java.awt.*;              // Color, Font, BorderLayout, GridLayout, etc.
+import java.awt.event.*;        // MouseEvent, MouseAdapter for mouse click/hover events
+import java.util.*;             // Map, List, ArrayList, etc.
+import java.util.List;          // Explicit import of List to avoid ambiguity
+import java.util.function.Consumer; // Consumer<T>: a functional interface for callbacks that accept one argument
+import javax.swing.*;           // All Swing components: JPanel, JLabel, JScrollPane, etc.
+import javax.swing.border.*;    // Border classes
 
 /**
  * LearningModulePanel serves as the main entry point dashboard for the educational module.
@@ -33,41 +39,53 @@ public class LearningModulePanel extends JPanel {
     private static final Color BORDER_CLR = new Color(0xDDDDDD);
 
     // ── Data and State Tracking Elements ──────────────────────────────────────
-    private Map<String, List<LearningContent>> allTopics;
-    private boolean[] completed;
-    private int completedCount = 0;
-    private String lastCompletedTopic = "";
+    private Map<String, List<LearningContent>> allTopics; // Stores ALL 10 topics and their pages — loaded from LearningData.getAllTopics()
+    private boolean[] completed; // Array of booleans, one per topic.
+    private int completedCount = 0; // // Counter: how many topics have been completed so far.
+    private String lastCompletedTopic = ""; // Stores the name of the most recently opened topic.
 
     // ── Core UI Container Subcomponents ────────────────────────────────────────
-    private CardLayout   cardLayout;
-    private JPanel       cardContainer;
-    private JPanel       homePanel;
-    private ContentPanel contentPanel;
-    private JProgressBar progressBar;
-    private JLabel       progressLabel;
-    private JPanel       cardsGrid;
+    private CardLayout   cardLayout;    // Controls which panel is currently visible
+    private JPanel       cardContainer; // Container that holds both homePanel and contentPanel
+    private JPanel       homePanel;     // The dashboard with the topic cards grid
+    private ContentPanel contentPanel;  // The panel that shows a topic's pages
+    private JProgressBar progressBar;   // Green progress bar in the header
+    private JLabel       progressLabel; // "X of 10 topics completed" text label
+    private JPanel       cardsGrid;     // The 2-column grid holding all topic cards
 
     // ── Function Callbacks (Member 4 Integration Hooks) ───────────────────────
-    private Runnable         onAllComplete;
-    private Runnable         onGoToQuiz;
-    private Consumer<String> onTopicDone;
+    // ── WHAT ARE CALLBACKS? ───────────────────────────────────────────────────
+    // These are function references passed in FROM OUTSIDE (from Main.java).
+    // Instead of LearningModulePanel knowing what to do when events happen,
+    // it lets the calling class (Main.java) decide by passing in functions.
+    // This is called the CALLBACK PATTERN.
+    //
+    // Runnable           → functional interface with one method: run()
+    //                      Used for zero-argument actions ("do this when X happens")
+    // Consumer<String>   → functional interface with one method: accept(String t)
+    //                      Used for actions that need one String argument
+    // ══════════════════════════════════════════════════════════════════════════
+    
+    private Runnable         onAllComplete; // Called when ALL 10 topics are finished
+    private Runnable         onGoToQuiz;    // Called when user presses "Take the Quiz"
+    private Consumer<String> onTopicDone;   // Called each time ONE topic is finished; receives topic name
 
     // 3-callback constructor for Member 4's Main.java
     public LearningModulePanel(Runnable onAllComplete,
                                 Runnable onGoToQuiz,
                                 Consumer<String> onTopicDone) {
-        this.onAllComplete = onAllComplete;
-        this.onGoToQuiz    = onGoToQuiz;
-        this.onTopicDone   = onTopicDone;
-        init();
+         this.onAllComplete = onAllComplete; // Store the "all done" callback
+        this.onGoToQuiz    = onGoToQuiz;    // Store the "go to quiz" callback
+        this.onTopicDone   = onTopicDone;   // Store the "one topic done" callback
+        init(); // Delegate the real setup work to init()
     }
 
     // 1-callback constructor for backward compatibility
     public LearningModulePanel(Runnable onAllComplete) {
         this.onAllComplete = onAllComplete;
-        this.onGoToQuiz    = null;
-        this.onTopicDone   = null;
-        init();
+        this.onGoToQuiz    = null; // Not provided — set to null (won't be triggered)
+        this.onTopicDone   = null; // Not provided — set to null
+        init(); // Same init() call — code is not duplicated
     }
 
     /**
@@ -75,13 +93,26 @@ public class LearningModulePanel extends JPanel {
      * registers primary layouts, and loads the Home dashboard state.
      */
     private void init() {
+        // ── PURPOSE ───────────────────────────────────────────────────────────────
+    // Central setup method called by BOTH constructors.
+    // Loads data, creates sub-panels, sets up the CardLayout, and shows the home screen.
+    // Load all 10 topics from LearningData.
         this.allTopics = LearningData.getAllTopics();
+        // getAllTopics() is static — called on the class, no object needed.
+        
         this.completed = new boolean[allTopics.size()];
+        // Create the completed array with one boolean per topic.
+        // allTopics.size() → returns 10 (number of topics)
+        // new boolean[10] → creates an array of 10 booleans, all defaulting to false
+
+        // Set up CardLayout — this controls which screen is visible
         cardLayout     = new CardLayout();
-        cardContainer  = new JPanel(cardLayout);
+        cardContainer  = new JPanel(cardLayout); // JPanel using CardLayout
         cardContainer.setBackground(WHITE);
-        buildHomePanel();
+        
+        buildHomePanel(); // Build the home dashboard panel (method below)
         // Pass references into ContentPanel to support seamless dashboard navigation backflows
+        
         contentPanel = new ContentPanel(this::showHome, this::handleTopicComplete);
         cardContainer.add(homePanel,    "HOME");
         cardContainer.add(contentPanel, "CONTENT");
@@ -324,3 +355,18 @@ public class LearningModulePanel extends JPanel {
         return list;
     }
 }
+
+    // ── FINAL SUMMARY OF OOP CONCEPTS IN THIS FILE ───────────────────────────
+    // • INHERITANCE          : extends JPanel — inherits all panel behaviour.
+    // • ENCAPSULATION        : All fields private; external access only via methods.
+    // • CONSTRUCTOR OVERLOADING: Two constructors (3-param and 1-param versions).
+    //                           Both call init() — no duplicated setup code.
+    // • Runnable             : onAllComplete, onGoToQuiz — zero-argument callbacks.
+    // • Consumer<String>     : onTopicDone — a callback that receives a String.
+    // • METHOD REFERENCE     : this::showHome, this::handleTopicComplete passed as lambdas.
+    // • ANONYMOUS INNER CLASS: MouseAdapter used inline to handle card hover/click.
+    // • @Override            : Used in MouseAdapter to override mouseClicked/Entered/Exited.
+    // • instanceof           : Used in getAllComponents() to check container type.
+    // • CardLayout           : Manages HOME/CONTENT screen switching without new windows.
+    // • RECURSION            : getAllComponents() calls itself for nested containers.
+    // ─────────────────────────────────────────────────────────────────────────
