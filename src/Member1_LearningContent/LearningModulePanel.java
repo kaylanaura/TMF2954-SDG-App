@@ -41,7 +41,7 @@ public class LearningModulePanel extends JPanel {
     // ── Data and State Tracking Elements ──────────────────────────────────────
     private Map<String, List<LearningContent>> allTopics; // Stores ALL 10 topics and their pages — loaded from LearningData.getAllTopics()
     private boolean[] completed; // Array of booleans, one per topic.
-    private int completedCount = 0; // // Counter: how many topics have been completed so far.
+    private int completedCount = 0; // Counter: how many topics have been completed so far.
     private String lastCompletedTopic = ""; // Stores the name of the most recently opened topic.
 
     // ── Core UI Container Subcomponents ────────────────────────────────────────
@@ -93,7 +93,7 @@ public class LearningModulePanel extends JPanel {
      * registers primary layouts, and loads the Home dashboard state.
      */
     private void init() {
-        // ── PURPOSE ───────────────────────────────────────────────────────────────
+      // ── PURPOSE ───────────────────────────────────────────────────────────────
     // Central setup method called by BOTH constructors.
     // Loads data, creates sub-panels, sets up the CardLayout, and shows the home screen.
     // Load all 10 topics from LearningData.
