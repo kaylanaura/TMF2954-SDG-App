@@ -90,7 +90,7 @@ public class ContentPanel extends JPanel {
     // 'Runnable onComplete' → the lambda to call when user finishes a topic
     // ══════════════════════════════════════════════════════════════════════════
     public ContentPanel(Runnable onBack, Runnable onComplete) {
-        tthis.onBack     = onBack;     // Store the "go home" callback
+        this.onBack     = onBack;     // Store the "go home" callback
         this.onComplete = onComplete; // Store the "topic finished" callback
 
         // setLayout() is INHERITED from JPanel.
